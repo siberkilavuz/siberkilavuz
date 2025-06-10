@@ -3,70 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mesaj</title>
+  <title>Mobil Mesaj</title>
   <style>
-    /* Temel stil */
-    html, body {
+    body {
       margin: 0;
       padding: 0;
-      height: 100%;
-      font-family: 'Arial', sans-serif;
+      background-color: black;
+      color: white;
+      font-family: Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(45deg, #000000, #333333, #444444);
-      background-size: 400% 400%;
-      animation: gradientAnimation 10s ease infinite;
-    }
-
-    /* Yazı stili */
-    #mesaj {
-      font-size: 3vw; /* Yazı boyutunu ekran genişliğine göre ayarla */
-      font-weight: bold;
-      color: white;
+      height: 100vh;
       text-align: center;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      opacity: 0;
-      animation: fadeIn 3s forwards;
-      animation-delay: 1s; /* 1 saniye bekleyip mesajı göster */
     }
 
-    /* Arka plan animasyonu */
-    @keyframes gradientAnimation {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    .mesaj {
+      font-size: 8vw;
+      font-weight: bold;
+      letter-spacing: 2px;
     }
 
-    /* Yazı fade-in animasyonu */
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
+    /* Sadece mobil cihazlar için geçerli */
+    @media (min-width: 601px) {
+      body {
+        display: none; /* Telefon dışı cihazlarda hiçbir şey gösterme */
       }
     }
-
-    /* Mobil uyum için */
-    @media (max-width: 500px) {
-      #mesaj {
-        font-size: 10vw; /* Küçük ekranlarda daha büyük yazı */
-        letter-spacing: 5px;
-      }
-    }
-
-    /* Tablet uyumlu */
-    @media (max-width: 768px) {
-      #mesaj {
-        font-size: 12vw; /* Tablet boyutlarında yazı boyutunu ayarla */
-      }
-    }
-
   </style>
 </head>
 <body>
-  <div id="mesaj">Panelciler siberci değildir</div>
+  <div class="mesaj">Panelciler siberci değildir</div>
 </body>
 </html>
