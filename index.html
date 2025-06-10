@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mesaj</title>
   <style>
-    /* Arka plan ve genel stil */
+    /* Temel stil */
     html, body {
       margin: 0;
       padding: 0;
@@ -19,14 +19,14 @@
       animation: gradientAnimation 10s ease infinite;
     }
 
-    /* Mesaj yazısının stili */
+    /* Yazı stili */
     #mesaj {
-      font-size: 5em;
+      font-size: 10vw; /* Yazı boyutunu ekran genişliğine göre ayarla */
       font-weight: bold;
       color: white;
       text-align: center;
       text-transform: uppercase;
-      letter-spacing: 5px;
+      letter-spacing: 3px;
       opacity: 0;
       animation: fadeIn 3s forwards;
       animation-delay: 1s; /* 1 saniye bekleyip mesajı göster */
@@ -46,6 +46,21 @@
       }
       to {
         opacity: 1;
+      }
+    }
+
+    /* Mobil uyum için */
+    @media (max-width: 600px) {
+      #mesaj {
+        font-size: 15vw; /* Küçük ekranlarda daha büyük yazı */
+        letter-spacing: 5px;
+      }
+    }
+
+    /* Tablet uyumlu */
+    @media (max-width: 768px) {
+      #mesaj {
+        font-size: 12vw; /* Tablet boyutlarında yazı boyutunu ayarla */
       }
     }
 
