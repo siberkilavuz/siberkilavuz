@@ -2,37 +2,74 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mobil Mesaj</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Beni Affeder Misin?</title>
   <style>
     body {
-      margin: 0;
-      padding: 0;
-      background-color: black;
-      color: white;
-      font-family: Arial, sans-serif;
+      font-family: sans-serif;
+      background-color: #fff0f0;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      margin: 0;
       text-align: center;
     }
 
-    .mesaj {
-      font-size: 8vw;
-      font-weight: bold;
-      letter-spacing: 2px;
+    h1 {
+      color: #e63946;
+      font-size: 2em;
+      margin-bottom: 40px;
     }
 
-    /* Sadece mobil cihazlar için geçerli */
-    @media (min-width: 601px) {
-      body {
-        display: none; /* Telefon dışı cihazlarda hiçbir şey gösterme */
-      }
+    .buttons {
+      display: flex;
+      gap: 20px;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .yes {
+      background-color: #38b000;
+      color: white;
+    }
+
+    .no {
+      background-color: #d00000;
+      color: white;
     }
   </style>
 </head>
 <body>
-  <div class="mesaj">👨‍🦱Beni affeder misin? </div>
+
+  <h1>Beni affeder misin?</h1>
+
+  <div class="buttons">
+    <button class="yes">Evet</button>
+    <button class="no">Hayır</button>
+  </div>
+
+  <script>
+    const yesBtn = document.querySelector('.yes');
+    const noBtn = document.querySelector('.no');
+
+    noBtn.addEventListener('click', () => {
+      noBtn.style.display = 'none';
+      yesBtn.style.transform = 'scale(1.5)';
+    });
+
+    yesBtn.addEventListener('click', () => {
+      document.body.innerHTML = '<h1 style="color:green;">Teşekkür ederim 💖</h1>';
+    });
+  </script>
+
 </body>
 </html>
