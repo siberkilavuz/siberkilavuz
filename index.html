@@ -72,6 +72,41 @@
 
     <div id="recaptcha_msg"></div>
 
+    <script>
+        // JavaScript kısmı - reCAPTCHA işlemleri için
+        function ara() {
+            const kullaniciAdi = document.getElementById("kullanici").value.trim();
+            const sonucDiv = document.getElementById("results");
+            sonucDiv.innerHTML = '';
+
+            if (!kullaniciAdi) {
+                alert("Kullanıcı adı boş olamaz!");
+                return;
+            }
+
+            document.getElementById("recaptcha").style.display = "block";
+            document.getElementById("recaptcha_msg").innerHTML = "Lütfen robot doğrulamasını tamamlayın.";
+        }
+
+        function verifyCaptcha() {
+            if (grecaptcha.getResponse()) {
+                document.getElementById("recaptcha_msg").innerHTML = "Doğrulama başarılı! Arama sonuçları gösteriliyor...";
+                showResults();
+            } else {
+                document.getElementById("recaptcha_msg").innerHTML = "Doğrulama başarısız, lütfen tekrar deneyin.";
+            }
+        }
+
+        function showResults() {
+            const kullaniciAdi = document.getElementById("kullanici").value.trim();
+            const sonucDiv = document.getElementById("results");
+            sonucDiv.innerHTML = '';
+
+            // Brython fonksiyonunu çağır
+            window.showBrythonResults(kullaniciAdi, sonucDiv);
+        }
+    </script>
+
     <script type="text/python">
         from browser import document, html, alert
         import time
@@ -103,7 +138,6 @@
             "DeviantArt": "https://www.deviantart.com/{}",
             "Behance": "https://www.behance.net/{}",
             "Dribbble": "https://dribbble.com/{}",
-            "Snapchat": "https://www.snapchat.com/add/{}",
             "Foursquare": "https://foursquare.com/user/{}",
             "Trello": "https://trello.com/{}",
             "Skype": "https://join.skype.com/invite/{}",
@@ -118,11 +152,9 @@
             "Zalo": "https://zalo.me/{}",
             "Badoo": "https://badoo.com/en/{}",
             "Coub": "https://coub.com/{}",
-            "Foursquare": "https://foursquare.com/user/{}",
             "MySpace": "https://myspace.com/{}",
             "Mix": "https://mix.com/{}",
             "Joomla": "https://www.joomla.org/user/{}",
-            "Slack": "https://slack.com/{}",
             "Meetup": "https://www.meetup.com/members/{}",
             "Disqus": "https://disqus.com/by/{}",
             "Picasa": "https://picasaweb.google.com/{}",
@@ -132,38 +164,13 @@
             "Vero": "https://www.vero.co/{}",
             "Mastodon": "https://mastodon.social/@{}",
             "PeerTube": "https://{}/videos",
-            "LiveJournal": "https://{}/profile",
-            "Mix": "https://mix.com/{}"
+            "LiveJournal": "https://{}/profile"
         }
 
         # Zaman Damgası ve Arama Limiti
         user_searches = {}
 
-        def ara(event=None):
-            kullanıcı_adı = document["kullanici"].value.strip()
-            sonuç_div = document["results"]
-            sonuç_div.clear()
-
-            if not kullanıcı_adı:
-                alert("Kullanıcı adı boş olamaz!")
-                return
-
-            # reCAPTCHA doğrulaması yapılacak
-            document["recaptcha"].style.display = "block"  # reCAPTCHA göster
-            document["recaptcha_msg"].innerHTML = "Lütfen robot doğrulamasını tamamlayın."
-
-        def verifyCaptcha():
-            if grecaptcha.getResponse():
-                document["recaptcha_msg"].innerHTML = "Doğrulama başarılı! Arama sonuçları gösteriliyor..."
-                showResults()
-            else:
-                document["recaptcha_msg"].innerHTML = "Doğrulama başarısız, lütfen tekrar deneyin."
-
-        def showResults():
-            kullanıcı_adı = document["kullanici"].value.strip()
-            sonuç_div = document["results"]
-            sonuç_div.clear()
-
+        def showBrythonResults(username, result_div):
             # Arama Limiti Kontrolü
             user_id = "default_user"
             current_time = time.time()
@@ -181,22 +188,30 @@
             else:
                 user_searches[user_id] = (current_time, 1)
 
-            sonuç_div <= html.H3(f"{kullanıcı_adı} için demo linkleri:")
+            result_div <= html.H3(f"{username} için demo linkleri:")
 
             # Tabloyu oluşturuyoruz
             tablo = html.TABLE()
             tablo <= html.TR() <= html.TH("Platform") + html.TH("Bağlantı")
 
             for isim, url in platforms.items():
-                tam_url = url.format(kullanıcı_adı)
+                tam_url = url.format(username)
                 satır = html.TR()
                 satır <= html.TD(isim) + html.TD(html.A("Link", href=tam_url, target="_blank"))
                 tablo <= satır
 
-            sonuç_div <= tablo
+            result_div <= tablo
             document["results"].style.display = "block"  # Sonuçları görünür yap
 
-        document["kullanici"].bind("keypress", lambda ev: ara() if ev.keyCode == 13 else None)
+        # Brython fonksiyonunu global yapıyoruz
+        window.showBrythonResults = showBrythonResults
+
+        # Enter tuşu desteği
+        def on_key_press(ev):
+            if ev.keyCode == 13:
+                ara()
+
+        document["kullanici"].bind("keypress", on_key_press)
     </script>
 </body>
 </html>
