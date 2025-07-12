@@ -44,6 +44,9 @@
             color: red;
             font-size: 16px;
         }
+        #results {
+            display: none;  /* Başlangıçta arama sonuçları gizli */
+        }
     </style>
 </head>
 <body onload="brython()">
@@ -55,7 +58,7 @@
 
     <!-- reCAPTCHA widget (başlangıçta gizli olacak) -->
     <div id="recaptcha" style="display: none;">
-        <div class="g-recaptcha" data-sitekey="6LdJjYArAAAAALWI_liYtr6sV1i0zfPBYjbvn87B" ></div>
+        <div class="g-recaptcha" data-sitekey="6LdJjYArAAAAALWI_liYtr6sV1i0zfPBYjbvn87B"></div>
         <button id="verify_btn" onclick="verifyCaptcha()">Doğrulama Yap</button>
     </div>
 
@@ -191,6 +194,7 @@
                 tablo <= satır
 
             sonuç_div <= tablo
+            document["results"].style.display = "block"  # Sonuçları görünür yap
 
         document["kullanici"].bind("keypress", lambda ev: ara() if ev.keyCode == 13 else None)
     </script>
