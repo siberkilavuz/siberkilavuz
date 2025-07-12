@@ -61,8 +61,8 @@
     <button id="tara_btn" onclick="startSearch()">Tara</button>
 
     <div id="recaptcha" style="display: none;">
-        <div class="g-recaptcha" data-sitekey="6LdJjYArAAAAALWI_liYtr6sV1i0zfPBYjbvn87B"></div>
-        <button onclick="verifyCaptcha()">Doğrulama Yap</button>
+        <div class="g-recaptcha" data-sitekey="6LdJjYArAAAAALWI_liYtr6sV1i0zfPBYjbvn87B" data-callback="onCaptchaSuccess"></div>
+        <div id="recaptcha_msg"></div>
     </div>
 
     <div id="results"></div>
@@ -73,29 +73,26 @@
         <a href="https://www.youtube.com/@Siberk%C4%B1lavuz" target="_blank">YouTube</a>
     </div>
 
-    <div id="recaptcha_msg"></div>
-
     <script>
-        // JavaScript fonksiyonları
+        // Global değişkenler
+        let currentUsername = '';
+        
+        // Arama başlatma fonksiyonu
         function startSearch() {
-            const username = document.getElementById("kullanici").value.trim();
-            if (!username) {
+            currentUsername = document.getElementById("kullanici").value.trim();
+            if (!currentUsername) {
                 alert("Kullanıcı adı boş olamaz!");
                 return;
             }
             document.getElementById("recaptcha").style.display = "block";
             document.getElementById("recaptcha_msg").textContent = "Lütfen robot doğrulamasını tamamlayın.";
         }
-
-        function verifyCaptcha() {
-            if (grecaptcha.getResponse()) {
-                document.getElementById("recaptcha_msg").textContent = "Doğrulama başarılı! Arama yapılıyor...";
-                const username = document.getElementById("kullanici").value.trim();
-                // Brython fonksiyonunu çağır
-                window.showResults(username);
-            } else {
-                document.getElementById("recaptcha_msg").textContent = "Lütfen önce robot olmadığınızı doğrulayın.";
-            }
+        
+        // reCAPTCHA başarılı olduğunda çağrılır
+        function onCaptchaSuccess() {
+            document.getElementById("recaptcha_msg").textContent = "Doğrulama başarılı! Arama yapılıyor...";
+            // Brython fonksiyonunu çağır
+            window.showResults(currentUsername);
         }
     </script>
 
