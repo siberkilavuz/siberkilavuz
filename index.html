@@ -5,6 +5,7 @@
     <title>SiberKılavuz Username Bulucu</title>
     <script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         body {
             background-color: #1e1e1e;
@@ -45,7 +46,10 @@
     <h1>🔎 SiberKılavuz Username Bulucu</h1>
     <input id="kullanici" type="text" placeholder="Kullanıcı adı girin">
     <button onclick="ara()">Tara</button>
-    
+
+    <!-- reCAPTCHA widget -->
+    <div class="g-recaptcha" data-sitekey="6LdJjYArAAAAALWI_liYtr6sV1i0zfPBYjbvn87B"></div>
+
     <div id="results"></div>
 
     <div class="social-links">
@@ -57,7 +61,7 @@
     <script type="text/python">
         from browser import document, html, alert
 
-   
+        # 50'den fazla sosyal medya platformu eklendi
         platforms = {
             "GitHub": "https://github.com/{}",
             "Instagram": "https://instagram.com/{}",
@@ -117,30 +121,55 @@
             "Mix": "https://mix.com/{}"
         }
 
+        # Zaman Damgası ve Arama Limiti
+        user_searches = {}
+
         def ara(event=None):
             kullanıcı_adı = document["kullanici"].value.strip()
             sonuç_div = document["results"]
             sonuç_div.clear()
-            
+
             if not kullanıcı_adı:
                 alert("Kullanıcı adı boş olamaz!")
                 return
 
-            sonuç_div <= html.H3(f"{kullanıcı_adı} için sosyal medya linkleri:")
+            # ReCAPTCHA doğrulaması
+            if not grecaptcha.getResponse():
+                alert("Lütfen reCAPTCHA'yı doğrulayın!")
+                return
 
-           
+            # Arama Limiti Kontrolü
+            user_id = "default_user"
+            current_time = time.time()
+
+            if user_id in user_searches:
+                last_search_time, search_count = user_searches[user_id]
+                if current_time - last_search_time < 10:
+                    if search_count >= 2:
+                        alert("10 saniyede yalnızca 2 arama yapabilirsiniz!")
+                        return
+                    else:
+                        user_searches[user_id] = (current_time, search_count + 1)
+                else:
+                    user_searches[user_id] = (current_time, 1)
+            else:
+                user_searches[user_id] = (current_time, 1)
+
+            sonuç_div <= html.H3(f"{kullanıcı_adı} için demo linkleri:")
+
+            # Tabloyu oluşturuyoruz
             tablo = html.TABLE()
             tablo <= html.TR() <= html.TH("Platform") + html.TH("Bağlantı")
-            
+
             for isim, url in platforms.items():
                 tam_url = url.format(kullanıcı_adı)
                 satır = html.TR()
                 satır <= html.TD(isim) + html.TD(html.A("Link", href=tam_url, target="_blank"))
                 tablo <= satır
-            
+
             sonuç_div <= tablo
 
-        document["kullanici"].bind("keypress", lambda ev: ara() if ev.keyCode==13 else None)
+        document["kullanici"].bind("keypress", lambda ev: ara() if ev.keyCode == 13 else None)
     </script>
 </body>
 </html>
