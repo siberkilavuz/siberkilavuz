@@ -1,75 +1,146 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Beni Affeder Misin?</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background-color: #fff0f0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      text-align: center;
-    }
-
-    h1 {
-      color: #e63946;
-      font-size: 2em;
-      margin-bottom: 40px;
-    }
-
-    .buttons {
-      display: flex;
-      gap: 20px;
-    }
-
-    button {
-      padding: 15px 30px;
-      font-size: 1.2em;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .yes {
-      background-color: #38b000;
-      color: white;
-    }
-
-    .no {
-      background-color: #d00000;
-      color: white;
-    }
-  </style>
+    <meta charset="utf-8">
+    <title>SiberKılavuz Username Bulucu</title>
+    <script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+            padding: 40px;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 18px;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 80%;
+            margin: 0 auto;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #555;
+        }
+        th {
+            background-color: #333;
+        }
+        a {
+            color: #00ff99;
+            text-decoration: none;
+        }
+        .social-links {
+            margin-top: 30px;
+        }
+    </style>
 </head>
-<body>
+<body onload="brython()">
+    <h1>🔎 SiberKılavuz Username Bulucu</h1>
+    <input id="kullanici" type="text" placeholder="Kullanıcı adı girin">
+    <button onclick="ara()">Tara</button>
+    
+    <div id="results"></div>
 
-  <h1>Beni affeder misin?</h1>
+    <div class="social-links">
+        <p>🎥 Bizi takip et:</p>
+        <a href="https://www.instagram.com/siberkilavuz/#" target="_blank">Instagram</a> | 
+        <a href="https://www.youtube.com/@Siberk%C4%B1lavuz" target="_blank">YouTube</a>
+    </div>
 
-  <div class="buttons">
-    <button class="yes">Evet</button>
-    <button class="no">Hayır</button>
-  </div>
+    <script type="text/python">
+        from browser import document, html, alert
 
-  <script>
-    const yesBtn = document.querySelector('.yes');
-    const noBtn = document.querySelector('.no');
+        # 50'den fazla sosyal medya platformu eklendi
+        platforms = {
+            "GitHub": "https://github.com/{}",
+            "Instagram": "https://instagram.com/{}",
+            "Twitter": "https://twitter.com/{}",
+            "Reddit": "https://www.reddit.com/user/{}",
+            "TikTok": "https://tiktok.com/@{}",
+            "Facebook": "https://www.facebook.com/{}",
+            "LinkedIn": "https://www.linkedin.com/in/{}",
+            "Pinterest": "https://www.pinterest.com/{}",
+            "YouTube": "https://www.youtube.com/@{}",
+            "Snapchat": "https://www.snapchat.com/add/{}",
+            "Spotify": "https://open.spotify.com/user/{}",
+            "Tumblr": "https://{}.tumblr.com",
+            "SoundCloud": "https://soundcloud.com/{}",
+            "Medium": "https://medium.com/@{}",
+            "Quora": "https://www.quora.com/profile/{}",
+            "StackOverflow": "https://stackoverflow.com/users/{}",
+            "Flickr": "https://www.flickr.com/photos/{}",
+            "Vimeo": "https://vimeo.com/{}",
+            "Steam": "https://steamcommunity.com/id/{}",
+            "Discord": "https://discord.com/users/{}",
+            "Twitch": "https://www.twitch.tv/{}",
+            "Periscope": "https://www.pscp.tv/{}",
+            "DeviantArt": "https://www.deviantart.com/{}",
+            "Behance": "https://www.behance.net/{}",
+            "Dribbble": "https://dribbble.com/{}",
+            "Snapchat": "https://www.snapchat.com/add/{}",
+            "Foursquare": "https://foursquare.com/user/{}",
+            "Trello": "https://trello.com/{}",
+            "Skype": "https://join.skype.com/invite/{}",
+            "GitLab": "https://gitlab.com/{}",
+            "Kik": "https://kik.com/{}",
+            "Yelp": "https://www.yelp.com/user_details?userid={}",
+            "WeChat": "https://web.wechat.com/{}",
+            "Line": "https://line.me/ti/p/{}",
+            "Viber": "https://www.viber.com/{}",
+            "WhatsApp": "https://wa.me/{}",
+            "Slack": "https://slack.com/{}",
+            "Zalo": "https://zalo.me/{}",
+            "Badoo": "https://badoo.com/en/{}",
+            "Coub": "https://coub.com/{}",
+            "Foursquare": "https://foursquare.com/user/{}",
+            "MySpace": "https://myspace.com/{}",
+            "Mix": "https://mix.com/{}",
+            "Joomla": "https://www.joomla.org/user/{}",
+            "Slack": "https://slack.com/{}",
+            "Meetup": "https://www.meetup.com/members/{}",
+            "Disqus": "https://disqus.com/by/{}",
+            "Picasa": "https://picasaweb.google.com/{}",
+            "Gravatar": "https://www.gravatar.com/{}",
+            "Blogger": "https://www.blogger.com/profile/{}",
+            "Redbubble": "https://www.redbubble.com/people/{}",
+            "Vero": "https://www.vero.co/{}",
+            "Mastodon": "https://mastodon.social/@{}",
+            "PeerTube": "https://{}/videos",
+            "LiveJournal": "https://{}/profile",
+            "Mix": "https://mix.com/{}"
+        }
 
-    noBtn.addEventListener('click', () => {
-      noBtn.style.display = 'none';
-      yesBtn.style.transform = 'scale(1.5)';
-    });
+        def ara(event=None):
+            kullanıcı_adı = document["kullanici"].value.strip()
+            sonuç_div = document["results"]
+            sonuç_div.clear()
+            
+            if not kullanıcı_adı:
+                alert("Kullanıcı adı boş olamaz!")
+                return
 
-    yesBtn.addEventListener('click', () => {
-      document.body.innerHTML = '<h1 style="color:green;">Teşekkür ederim 💖</h1>';
-    });
-  </script>
+            sonuç_div <= html.H3(f"{kullanıcı_adı} için demo linkleri:")
 
+            # Tabloyu oluşturuyoruz
+            tablo = html.TABLE()
+            tablo <= html.TR() <= html.TH("Platform") + html.TH("Bağlantı")
+            
+            for isim, url in platforms.items():
+                tam_url = url.format(kullanıcı_adı)
+                satır = html.TR()
+                satır <= html.TD(isim) + html.TD(html.A("Link", href=tam_url, target="_blank"))
+                tablo <= satır
+            
+            sonuç_div <= tablo
+
+        document["kullanici"].bind("keypress", lambda ev: ara() if ev.keyCode==13 else None)
+    </script>
 </body>
 </html>
