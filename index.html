@@ -45,21 +45,24 @@
             font-size: 16px;
         }
         #results {
-            display: none;  /* Arama sonuçları başlangıçta gizli */
+            display: none;
+            margin-top: 20px;
+        }
+        .g-recaptcha {
+            display: inline-block;
+            margin: 15px 0;
         }
     </style>
 </head>
 <body onload="brython()">
     <h1>🔎 SiberKılavuz Username Bulucu</h1>
 
-    <!-- Arama çubuğu ve butonları -->
     <input id="kullanici" type="text" placeholder="Kullanıcı adı girin">
-    <button id="tara_btn" onclick="ara()">Tara</button>
+    <button id="tara_btn" onclick="startSearch()">Tara</button>
 
-    <!-- reCAPTCHA widget (başlangıçta gizli olacak) -->
     <div id="recaptcha" style="display: none;">
         <div class="g-recaptcha" data-sitekey="6LdJjYArAAAAALWI_liYtr6sV1i0zfPBYjbvn87B"></div>
-        <button id="verify_btn" onclick="verifyCaptcha()">Doğrulama Yap</button>
+        <button onclick="verifyCaptcha()">Doğrulama Yap</button>
     </div>
 
     <div id="results"></div>
@@ -73,45 +76,33 @@
     <div id="recaptcha_msg"></div>
 
     <script>
-        // JavaScript kısmı - reCAPTCHA işlemleri için
-        function ara() {
-            const kullaniciAdi = document.getElementById("kullanici").value.trim();
-            const sonucDiv = document.getElementById("results");
-            sonucDiv.innerHTML = '';
-
-            if (!kullaniciAdi) {
+        // JavaScript fonksiyonları
+        function startSearch() {
+            const username = document.getElementById("kullanici").value.trim();
+            if (!username) {
                 alert("Kullanıcı adı boş olamaz!");
                 return;
             }
-
             document.getElementById("recaptcha").style.display = "block";
-            document.getElementById("recaptcha_msg").innerHTML = "Lütfen robot doğrulamasını tamamlayın.";
+            document.getElementById("recaptcha_msg").textContent = "Lütfen robot doğrulamasını tamamlayın.";
         }
 
         function verifyCaptcha() {
             if (grecaptcha.getResponse()) {
-                document.getElementById("recaptcha_msg").innerHTML = "Doğrulama başarılı! Arama sonuçları gösteriliyor...";
-                showResults();
+                document.getElementById("recaptcha_msg").textContent = "Doğrulama başarılı! Arama yapılıyor...";
+                const username = document.getElementById("kullanici").value.trim();
+                // Brython fonksiyonunu çağır
+                window.showResults(username);
             } else {
-                document.getElementById("recaptcha_msg").innerHTML = "Doğrulama başarısız, lütfen tekrar deneyin.";
+                document.getElementById("recaptcha_msg").textContent = "Lütfen önce robot olmadığınızı doğrulayın.";
             }
-        }
-
-        function showResults() {
-            const kullaniciAdi = document.getElementById("kullanici").value.trim();
-            const sonucDiv = document.getElementById("results");
-            sonucDiv.innerHTML = '';
-
-            // Brython fonksiyonunu çağır
-            window.showBrythonResults(kullaniciAdi, sonucDiv);
         }
     </script>
 
     <script type="text/python">
-        from browser import document, html, alert
+        from browser import document, html, window, alert
         import time
 
-        # 50'den fazla sosyal medya platformu eklendi
         platforms = {
             "GitHub": "https://github.com/{}",
             "Instagram": "https://instagram.com/{}",
@@ -133,83 +124,50 @@
             "Vimeo": "https://vimeo.com/{}",
             "Steam": "https://steamcommunity.com/id/{}",
             "Discord": "https://discord.com/users/{}",
-            "Twitch": "https://www.twitch.tv/{}",
-            "Periscope": "https://www.pscp.tv/{}",
-            "DeviantArt": "https://www.deviantart.com/{}",
-            "Behance": "https://www.behance.net/{}",
-            "Dribbble": "https://dribbble.com/{}",
-            "Foursquare": "https://foursquare.com/user/{}",
-            "Trello": "https://trello.com/{}",
-            "Skype": "https://join.skype.com/invite/{}",
-            "GitLab": "https://gitlab.com/{}",
-            "Kik": "https://kik.com/{}",
-            "Yelp": "https://www.yelp.com/user_details?userid={}",
-            "WeChat": "https://web.wechat.com/{}",
-            "Line": "https://line.me/ti/p/{}",
-            "Viber": "https://www.viber.com/{}",
-            "WhatsApp": "https://wa.me/{}",
-            "Slack": "https://slack.com/{}",
-            "Zalo": "https://zalo.me/{}",
-            "Badoo": "https://badoo.com/en/{}",
-            "Coub": "https://coub.com/{}",
-            "MySpace": "https://myspace.com/{}",
-            "Mix": "https://mix.com/{}",
-            "Joomla": "https://www.joomla.org/user/{}",
-            "Meetup": "https://www.meetup.com/members/{}",
-            "Disqus": "https://disqus.com/by/{}",
-            "Picasa": "https://picasaweb.google.com/{}",
-            "Gravatar": "https://www.gravatar.com/{}",
-            "Blogger": "https://www.blogger.com/profile/{}",
-            "Redbubble": "https://www.redbubble.com/people/{}",
-            "Vero": "https://www.vero.co/{}",
-            "Mastodon": "https://mastodon.social/@{}",
-            "PeerTube": "https://{}/videos",
-            "LiveJournal": "https://{}/profile"
+            "Twitch": "https://www.twitch.tv/{}"
         }
 
-        # Zaman Damgası ve Arama Limiti
         user_searches = {}
 
-        def showBrythonResults(username, result_div):
-            # Arama Limiti Kontrolü
-            user_id = "default_user"
+        def showResults(username):
+            # Arama limit kontrolü
             current_time = time.time()
-
-            if user_id in user_searches:
-                last_search_time, search_count = user_searches[user_id]
-                if current_time - last_search_time < 10:
-                    if search_count >= 2:
-                        alert("10 saniyede yalnızca 2 arama yapabilirsiniz!")
-                        return
-                    else:
-                        user_searches[user_id] = (current_time, search_count + 1)
-                else:
-                    user_searches[user_id] = (current_time, 1)
+            if "last_search" in user_searches:
+                last_time, count = user_searches["last_search"]
+                if current_time - last_time < 10 and count >= 2:
+                    alert("10 saniyede en fazla 2 arama yapabilirsiniz!")
+                    return
+                user_searches["last_search"] = (current_time, count + 1)
             else:
-                user_searches[user_id] = (current_time, 1)
+                user_searches["last_search"] = (current_time, 1)
 
-            result_div <= html.H3(f"{username} için demo linkleri:")
+            # Sonuçları oluştur
+            results_div = document["results"]
+            results_div.innerHTML = ""
+            results_div.style.display = "block"
 
-            # Tabloyu oluşturuyoruz
-            tablo = html.TABLE()
-            tablo <= html.TR() <= html.TH("Platform") + html.TH("Bağlantı")
+            title = html.H3(f"{username} için bulunan platformlar:")
+            results_div <= title
 
-            for isim, url in platforms.items():
-                tam_url = url.format(username)
-                satır = html.TR()
-                satır <= html.TD(isim) + html.TD(html.A("Link", href=tam_url, target="_blank"))
-                tablo <= satır
+            table = html.TABLE()
+            table <= html.TR(html.TH("Platform") + html.TH("Bağlantı"))
 
-            result_div <= tablo
-            document["results"].style.display = "block"  # Sonuçları görünür yap
+            for platform, url in platforms.items():
+                full_url = url.format(username)
+                row = html.TR(
+                    html.TD(platform) + 
+                    html.TD(html.A("Profil linki", href=full_url, target="_blank"))
+                table <= row
 
-        # Brython fonksiyonunu global yapıyoruz
-        window.showBrythonResults = showBrythonResults
+            results_div <= table
+
+        # Brython fonksiyonunu global olarak erişilebilir yap
+        window.showResults = showResults
 
         # Enter tuşu desteği
         def on_key_press(ev):
-            if ev.keyCode == 13:
-                ara()
+            if ev.key == "Enter":
+                window.startSearch()
 
         document["kullanici"].bind("keypress", on_key_press)
     </script>
