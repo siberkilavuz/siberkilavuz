@@ -40,15 +40,22 @@
         .social-links {
             margin-top: 30px;
         }
+        #kullanici, #tara_btn {
+            display: none;  /* Başlangıçta gizli */
+        }
     </style>
 </head>
 <body onload="brython()">
     <h1>🔎 SiberKılavuz Username Bulucu</h1>
-    <input id="kullanici" type="text" placeholder="Kullanıcı adı girin">
-    <button onclick="ara()">Tara</button>
 
     <!-- reCAPTCHA widget -->
-    <div class="g-recaptcha" data-sitekey="6LdJjYArAAAAALWI_liYtr6sV1i0zfPBYjbvn87B"></div>
+    <div class="g-recaptcha" data-sitekey="6LdJjYArAAAAALWI_liYtr6sV1i0zfPBYjbvn87B" onclick="showSearchBox()"></div>
+
+    <!-- Arama çubuğu ve butonları -->
+    <div id="search_box" style="display: none;">
+        <input id="kullanici" type="text" placeholder="Kullanıcı adı girin">
+        <button id="tara_btn" onclick="ara()">Tara</button>
+    </div>
 
     <div id="results"></div>
 
@@ -60,6 +67,7 @@
 
     <script type="text/python">
         from browser import document, html, alert
+        import time
 
         # 50'den fazla sosyal medya platformu eklendi
         platforms = {
@@ -124,6 +132,10 @@
         # Zaman Damgası ve Arama Limiti
         user_searches = {}
 
+        def showSearchBox():
+            if grecaptcha.getResponse():
+                document["search_box"].style.display = "block"  # Arama çubuğunu göster
+
         def ara(event=None):
             kullanıcı_adı = document["kullanici"].value.strip()
             sonuç_div = document["results"]
@@ -131,11 +143,6 @@
 
             if not kullanıcı_adı:
                 alert("Kullanıcı adı boş olamaz!")
-                return
-
-            # ReCAPTCHA doğrulaması
-            if not grecaptcha.getResponse():
-                alert("Lütfen reCAPTCHA'yı doğrulayın!")
                 return
 
             # Arama Limiti Kontrolü
