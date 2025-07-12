@@ -40,21 +40,23 @@
         .social-links {
             margin-top: 30px;
         }
-        #search_box {
-            display: none;  /* Arama çubuğu başlangıçta gizli */
+        #recaptcha_msg {
+            color: red;
+            font-size: 16px;
         }
     </style>
 </head>
 <body onload="brython()">
     <h1>🔎 SiberKılavuz Username Bulucu</h1>
 
-    <!-- reCAPTCHA widget -->
-    <div class="g-recaptcha" data-sitekey="6LdJjYArAAAAALWI_liYtr6sV1i0zfPBYjbvn87B" id="recaptcha" onclick="showSearchBox()"></div>
-
     <!-- Arama çubuğu ve butonları -->
-    <div id="search_box">
-        <input id="kullanici" type="text" placeholder="Kullanıcı adı girin">
-        <button id="tara_btn" onclick="ara()">Tara</button>
+    <input id="kullanici" type="text" placeholder="Kullanıcı adı girin">
+    <button id="tara_btn" onclick="ara()">Tara</button>
+
+    <!-- reCAPTCHA widget (başlangıçta gizli olacak) -->
+    <div id="recaptcha" style="display: none;">
+        <div class="g-recaptcha" data-sitekey="6LdJjYArAAAAALWI_liYtr6sV1i0zfPBYjbvn87B" ></div>
+        <button id="verify_btn" onclick="verifyCaptcha()">Doğrulama Yap</button>
     </div>
 
     <div id="results"></div>
@@ -64,6 +66,8 @@
         <a href="https://www.instagram.com/siberkilavuz/#" target="_blank">Instagram</a> | 
         <a href="https://www.youtube.com/@Siberk%C4%B1lavuz" target="_blank">YouTube</a>
     </div>
+
+    <div id="recaptcha_msg"></div>
 
     <script type="text/python">
         from browser import document, html, alert
@@ -132,11 +136,6 @@
         # Zaman Damgası ve Arama Limiti
         user_searches = {}
 
-        # Arama çubuğunu sadece reCAPTCHA doğrulaması başarılı olduğunda göster
-        def showSearchBox():
-            if grecaptcha.getResponse():
-                document["search_box"].style.display = "block"  # Arama çubuğunu göster
-
         def ara(event=None):
             kullanıcı_adı = document["kullanici"].value.strip()
             sonuç_div = document["results"]
@@ -145,6 +144,22 @@
             if not kullanıcı_adı:
                 alert("Kullanıcı adı boş olamaz!")
                 return
+
+            # reCAPTCHA doğrulaması yapılacak
+            document["recaptcha"].style.display = "block"  # reCAPTCHA göster
+            document["recaptcha_msg"].innerHTML = "Lütfen robot doğrulamasını tamamlayın."
+
+        def verifyCaptcha():
+            if grecaptcha.getResponse():
+                document["recaptcha_msg"].innerHTML = "Doğrulama başarılı! Arama sonuçları gösteriliyor..."
+                showResults()
+            else:
+                document["recaptcha_msg"].innerHTML = "Doğrulama başarısız, lütfen tekrar deneyin."
+
+        def showResults():
+            kullanıcı_adı = document["kullanici"].value.strip()
+            sonuç_div = document["results"]
+            sonuç_div.clear()
 
             # Arama Limiti Kontrolü
             user_id = "default_user"
