@@ -13,7 +13,6 @@
             font-family: Arial;
             text-align: center;
             padding: 40px;
-            display: none; /* Başlangıçta tüm sayfa gizli */
         }
         #captcha-container {
             position: fixed;
@@ -60,10 +59,6 @@
         #results {
             display: none;
             margin-top: 20px;
-        }
-        .g-recaptcha {
-            display: inline-block;
-            margin: 15px 0;
         }
     </style>
 </head>
@@ -168,6 +163,7 @@
                 satir = html.TR(
                     html.TD(platform) + 
                     html.TD(html.A("Profil linki", href=tam_url, target="_blank"))
+                )
                 tablo <= satir
 
             sonuc_div <= tablo
