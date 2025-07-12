@@ -57,7 +57,7 @@
     <script type="text/python">
         from browser import document, html, alert
 
-        # 50'den fazla sosyal medya platformu eklendi
+   
         platforms = {
             "GitHub": "https://github.com/{}",
             "Instagram": "https://instagram.com/{}",
@@ -126,9 +126,9 @@
                 alert("Kullanıcı adı boş olamaz!")
                 return
 
-            sonuç_div <= html.H3(f"{kullanıcı_adı} için demo linkleri:")
+            sonuç_div <= html.H3(f"{kullanıcı_adı} için sosyal medya linkleri:")
 
-            # Tabloyu oluşturuyoruz
+           
             tablo = html.TABLE()
             tablo <= html.TR() <= html.TH("Platform") + html.TH("Bağlantı")
             
