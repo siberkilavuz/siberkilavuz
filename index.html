@@ -13,6 +13,19 @@
             font-family: Arial;
             text-align: center;
             padding: 40px;
+            display: none; /* Başlangıçta tüm sayfa gizli */
+        }
+        #captcha-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        #captcha-msg {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 18px;
         }
         input, button {
             padding: 10px;
@@ -54,50 +67,48 @@
         }
     </style>
 </head>
-<body onload="brython()">
-    <h1>🔎 SiberKılavuz Username Bulucu</h1>
-
-    <input id="kullanici" type="text" placeholder="Kullanıcı adı girin">
-    <button id="tara_btn" onclick="startSearch()">Tara</button>
-
-    <div id="recaptcha" style="display: none;">
+<body>
+    <!-- reCAPTCHA Doğrulama Alanı -->
+    <div id="captcha-container">
+        <div id="captcha-msg">Lütfen robot olmadığınızı doğrulayın</div>
         <div class="g-recaptcha" data-sitekey="6LdJjYArAAAAALWI_liYtr6sV1i0zfPBYjbvn87B" data-callback="onCaptchaSuccess"></div>
+    </div>
+
+    <!-- Ana İçerik (Başlangıçta Gizli) -->
+    <div id="main-content" style="display: none;">
+        <h1>🔎 SiberKılavuz Username Bulucu</h1>
+
+        <input id="kullanici" type="text" placeholder="Kullanıcı adı girin">
+        <button id="tara_btn">Tara</button>
+
+        <div id="results"></div>
+
+        <div class="social-links">
+            <p>🎥 Bizi takip et:</p>
+            <a href="https://www.instagram.com/siberkilavuz/#" target="_blank">Instagram</a> | 
+            <a href="https://www.youtube.com/@Siberk%C4%B1lavuz" target="_blank">YouTube</a>
+        </div>
+
         <div id="recaptcha_msg"></div>
     </div>
 
-    <div id="results"></div>
-
-    <div class="social-links">
-        <p>🎥 Bizi takip et:</p>
-        <a href="https://www.instagram.com/siberkilavuz/#" target="_blank">Instagram</a> | 
-        <a href="https://www.youtube.com/@Siberk%C4%B1lavuz" target="_blank">YouTube</a>
-    </div>
-
     <script>
-        // Global değişkenler
-        let currentUsername = '';
-        
-        // Arama başlatma fonksiyonu
-        function startSearch() {
-            currentUsername = document.getElementById("kullanici").value.trim();
-            if (!currentUsername) {
-                alert("Kullanıcı adı boş olamaz!");
-                return;
-            }
-            document.getElementById("recaptcha").style.display = "block";
-            document.getElementById("recaptcha_msg").textContent = "Lütfen robot doğrulamasını tamamlayın.";
-        }
-        
         // reCAPTCHA başarılı olduğunda çağrılır
         function onCaptchaSuccess() {
-            document.getElementById("recaptcha_msg").textContent = "Doğrulama başarılı! Arama yapılıyor...";
-            // Brython fonksiyonunu çağır
-            window.showResults(currentUsername);
+            document.getElementById("captcha-container").style.display = "none";
+            document.getElementById("main-content").style.display = "block";
+            // Brython'u başlat
+            brython();
         }
+
+        // Sayfa yüklendiğinde sadece captcha göster
+        window.onload = function() {
+            document.getElementById("captcha-container").style.display = "block";
+        };
     </script>
 
     <script type="text/python">
-        from browser import document, html, window, alert
+        from browser import document, html, alert
         import time
 
         platforms = {
@@ -126,7 +137,15 @@
 
         user_searches = {}
 
-        def showResults(username):
+        def ara(event=None):
+            kullanici_adi = document["kullanici"].value.strip()
+            sonuc_div = document["results"]
+            sonuc_div.clear()
+
+            if not kullanici_adi:
+                alert("Kullanıcı adı boş olamaz!")
+                return
+
             # Arama limit kontrolü
             current_time = time.time()
             if "last_search" in user_searches:
@@ -138,35 +157,25 @@
             else:
                 user_searches["last_search"] = (current_time, 1)
 
-            # Sonuçları oluştur
-            results_div = document["results"]
-            results_div.innerHTML = ""
-            results_div.style.display = "block"
+            # Sonuçları göster
+            sonuc_div <= html.H3(f"{kullanici_adi} için bulunan platformlar:")
 
-            title = html.H3(f"{username} için bulunan platformlar:")
-            results_div <= title
-
-            table = html.TABLE()
-            table <= html.TR(html.TH("Platform") + html.TH("Bağlantı"))
+            tablo = html.TABLE()
+            tablo <= html.TR(html.TH("Platform") + html.TH("Bağlantı"))
 
             for platform, url in platforms.items():
-                full_url = url.format(username)
-                row = html.TR(
+                tam_url = url.format(kullanici_adi)
+                satir = html.TR(
                     html.TD(platform) + 
-                    html.TD(html.A("Profil linki", href=full_url, target="_blank"))
-                table <= row
+                    html.TD(html.A("Profil linki", href=tam_url, target="_blank"))
+                tablo <= satir
 
-            results_div <= table
+            sonuc_div <= tablo
+            sonuc_div.style.display = "block"
 
-        # Brython fonksiyonunu global olarak erişilebilir yap
-        window.showResults = showResults
-
-        # Enter tuşu desteği
-        def on_key_press(ev):
-            if ev.key == "Enter":
-                window.startSearch()
-
-        document["kullanici"].bind("keypress", on_key_press)
+        # Buton ve klavye olaylarını bağla
+        document["tara_btn"].bind("click", ara)
+        document["kullanici"].bind("keypress", lambda ev: ara() if ev.key == "Enter" else None)
     </script>
 </body>
 </html>
